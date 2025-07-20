@@ -11,6 +11,7 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { Search, Filter, Eye, Image as ImageIcon } from 'lucide-react';
+import { User } from "../declarations/main/main.did"
 
 interface Pattern {
   id: string;
@@ -23,10 +24,7 @@ interface Pattern {
 }
 
 interface GalleryProps {
-  user: {
-    name: string;
-    email?: string;
-  };
+  user: User | null;
 }
 
 export const Gallery = ({ user }: GalleryProps) => {
@@ -201,7 +199,7 @@ export const Gallery = ({ user }: GalleryProps) => {
                     {pattern.description || 'No description provided'}
                   </p>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>By {user.name}</span>
+                    <span>By {user?.name}</span>
                     <span>{new Date(pattern.createdAt).toLocaleDateString()}</span>
                   </div>
                 </CardContent>

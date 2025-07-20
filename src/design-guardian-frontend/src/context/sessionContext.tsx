@@ -1,7 +1,7 @@
 import { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { HttpAgent, Identity, AnonymousIdentity, ActorSubclass } from '@dfinity/agent';
-import { User, _SERVICE } from '../declarations/backend/design-guardian-backend.did';
-import { createActor } from "../declarations/backend";
+import { User, _SERVICE } from '../declarations/main/main.did';
+import { createActor } from "../declarations/main";
 import { AuthClient } from '@dfinity/auth-client';
 import ModalProviderSelect from '../components/auth/ModalProviderSelect';
 
@@ -17,6 +17,7 @@ type SessionContextType = {
   backend: ActorSubclass<_SERVICE>;
   login: () => void;
   logout: () => Promise<void>;
+  updateUser: (user: User) => void;
 };
 
 const defaultSessionContext: SessionContextType = {
@@ -28,6 +29,7 @@ const defaultSessionContext: SessionContextType = {
   }),
   login: () => { },
   logout: async () => { },
+  updateUser: () => { },
 };
 
 export const SessionContext = createContext<SessionContextType>(defaultSessionContext);
@@ -148,7 +150,7 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
     <SessionContext.Provider value={
       { 
         user, identity, backend, isAuthenticated,
-        login: handleLoginClick, logout }
+        login: handleLoginClick, logout, updateUser }
       }
     >
       {children}
@@ -160,4 +162,12 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
       />
     </SessionContext.Provider>
   );
+};
+
+export const useSession = (): SessionContextType => {
+  const context = useContext(SessionContext);
+  if (!context) {
+    throw new Error('useSession must be used within a SessionProvider');
+  }
+  return context;
 };
