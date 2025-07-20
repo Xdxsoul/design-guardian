@@ -3,12 +3,16 @@
     "design-guardian-backend": {
       "main": "src/design-guardian-backend/main.mo",
       "type": "motoko"
+    },
+    "frontend": {
+      "source": ["src/design-guardian-frontend/dist"],
+      "type": "assets"
     }
   },
   "defaults": {
     "build": {
       "args": "",
-      "packtool": ""
+      "packtool": "mops sources"
     }
   },
   "output_env_file": ".env",

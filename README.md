@@ -1,12 +1,12 @@
 ## 🧵 Project: Design Guardian
 #### "Your design, your property"
-#### Hackathon: WCHL25
+##### Hackathon: WCHL25
 ---
 
 ### 🔍 Problem Statement
-Textile designers face critical challenges in protecting and monetizing their creations:
+Fashion designers face critical challenges in protecting and monetizing their creations:
 
-✂️ Plagiarism and unauthorized use: There is no simple, global way to prove authorship or ownership over textile designs.
+✂️ Plagiarism and unauthorized use: There is no simple, global way to prove authorship or ownership over fashion designs.
 
 🌍 No traceability or authentication: Without verified records, proving authenticity or origin is hard, undermining trust in digital transactions.
 
@@ -17,32 +17,25 @@ Textile designers face critical challenges in protecting and monetizing their cr
 ---
 
 ### 🎯 Goal
-Empower textile designers to create, protect, visualize and sell their work as verifiable digital assets, ensuring full control over their intellectual property and usage rights.
+Empower fashion designers to create, protect, visualize and sell their work as verifiable digital assets, ensuring full control over their intellectual property and usage rights.
+[Fashion show module](./goals/fashion_show.md)
 
-💡 Proposed Solution
-Design Guardian serves as a digital rights protector, allowing creators to:
+---
 
-Design and save textile patterns on-platform.
+### 💡 Proposed Solution
+Design Guardian acts as a digital guardian of designers' rights, allowing them to **securely and easily** register their creations, as well as:
 
-View their design in a 3D simulator on garments.
-
-Tokenize it as an ICRC-7 NFT:
-
-The public side of the NFT shows the 3D rendering.
-
-The private metadata contains original source files, only accessible to the NFT owner.
-
-Publish or hide their NFTs in personal and global galleries.
-
-Monetize through:
-
-Direct sales
-
-Bids
-
-Usage licenses
-
-Resales with built-in royalties
++ Design and save fashion designs on-platform.
++ View their design in a 3D simulator on garments.
++ Tokenize it as an **ICRC-7** NFT:
++ The public side of the NFT shows the **3D** rendering.
++ The private metadata contains original source files, only accessible to the NFT owner.
++ Publish or hide their NFTs in personal and global galleries.
++ Monetize through:
++ Direct sales
++ Bids
++ Usage licenses
++ Resales with built-in royalties
 
 ---
 
