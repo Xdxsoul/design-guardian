@@ -2,11 +2,18 @@
   "canisters": {
     "design-guardian-backend": {
       "main": "src/design-guardian-backend/main.mo",
-      "type": "motoko"
+      "type": "motoko",
+      "declarations": {
+        "output": "./src/frontend/src/declarations/backend"
+      }
     },
     "frontend": {
       "source": ["src/design-guardian-frontend/dist"],
       "type": "assets"
+    },
+    "internet_identity": {
+      "type": "pull",
+      "id": "rdmx6-jaaaa-aaaaa-aaadq-cai"
     }
   },
   "defaults": {
@@ -15,6 +22,6 @@
       "packtool": "mops sources"
     }
   },
-  "output_env_file": ".env",
+  "output_env_file": "./src/design-guardian-frontend/.env",
   "version": 1
 }

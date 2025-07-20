@@ -16,6 +16,8 @@ const Index = () => {
     setCurrentPage('dashboard');
   };
 
+  console.log(import.meta.env.VITE_CANISTER_ID)
+
   const handleUpdateUser = (userData: { name: string; email?: string }) => {
     setUser(userData);
   };

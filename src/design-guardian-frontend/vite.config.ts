@@ -14,6 +14,10 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
+  define: {
+    global: 'globalThis',
+    'process.env.DFX_NETWORK': JSON.stringify(process.env.DFX_NETWORK || 'local'),
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
