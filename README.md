@@ -18,7 +18,9 @@ Fashion designers face critical challenges in protecting and monetizing their cr
 
 ### 🎯 Goal
 Empower fashion designers to create, protect, visualize and sell their work as verifiable digital assets, ensuring full control over their intellectual property and usage rights.
+
 [Fashion show module](./goals/fashion_show.md)
+
 [Gaming Integration](./goals/Gaming_Platform_Integration_Module.md)
 
 ---
