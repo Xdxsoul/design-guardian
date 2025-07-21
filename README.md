@@ -150,24 +150,33 @@ During this initial stage, Design Guardian lays the foundation for the future ec
 ___
 
 ### Local Deploy Instructions
-Clone repository
+##### 1 Clone repository
 ``` sh
 git clone https://github.com/Xdxsoul/design-guardian.git
 cd design-guardian
 ```
-Install mops modules
-if not mops installed
+##### 2 Install mops modules
+*if not mops installed*
 ```sh
   npm i -g ic-mops
 ```
 ```sh
 mops install
 ```
-Install pullable canister (internet Identity)
+##### 3 Install pullable canister (internet Identity)
 
 ```sh
 dfx deps pull
 dfx deps init
 dfx deps deploy
 ```
-
+##### Deploy backend
+```
+cd src/design-guardian-frontend
+npm run deploy
+```
+##### Deploy frontend
+```sh
+npm run build
+dfx deploy frontend
+```

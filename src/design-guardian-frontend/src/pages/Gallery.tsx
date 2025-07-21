@@ -56,12 +56,20 @@ export const Gallery = ({ user }: GalleryProps) => {
     }
 
     // Filter by design type
-    if (filterType) {
-      filtered = filtered.filter(design => design.kind === filterType);
-    }
+    // if (filterType) {
+    //   filtered = filtered.filter(design => design.kind === filterType);
+    // }
 
     setFilteredPatterns(filtered);
   }, [patterns, searchTerm, filterType]);
+
+  const whoAmi = async () => {
+    const response = await backend.whoAmi();
+    console.log(response)
+  
+  };
+  
+  whoAmi()
 
   const getDesignTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
@@ -184,12 +192,12 @@ export const Gallery = ({ user }: GalleryProps) => {
                     </CardTitle>
                     <Eye className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <Badge className={getDesignTypeColor(pattern.designType)}>
+                  {/* <Badge className={getDesignTypeColor(design.designType)}>
                     {getDesignTypeLabel(pattern.designType)}
-                  </Badge>
+                  </Badge> */}
                 </CardHeader>
                 <CardContent>
-                  {pattern.canvasData && (
+                  {/* {pattern.canvasData && (
                     <div className="mb-3 overflow-hidden rounded-lg">
                       <img
                         src={pattern.canvasData}
@@ -197,13 +205,13 @@ export const Gallery = ({ user }: GalleryProps) => {
                         className="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300"
                       />
                     </div>
-                  )}
+                  )} */}
                   <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                     {pattern.description || 'No description provided'}
                   </p>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <span>By {user?.name}</span>
-                    <span>{new Date(pattern.createdAt).toLocaleDateString()}</span>
+                    <span>{new Date(Number(pattern.dateCreation)).toLocaleDateString()}</span>
                   </div>
                 </CardContent>
               </Card>
