@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Palette, User, LogOut, Menu, Moon, Sun } from "lucide-react";
+import { Palette, User as _User, LogOut, Menu, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import {
   DropdownMenu,
@@ -9,12 +9,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
+import { User } from "../declarations/main/main.did"
 
 interface NavbarProps {
-  user?: {
-    name: string;
-    email?: string;
-  };
+  user?: User;
   onNavigate: (page: string) => void;
   onLogout?: () => void;
 }
@@ -90,13 +88,13 @@ export const Navbar = ({ user, onNavigate, onLogout }: NavbarProps) => {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="flex items-center space-x-2">
-                      <User className="h-4 w-4" />
+                      <_User className="h-4 w-4" />
                       <span className="hidden sm:block">{user.name}</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56 bg-popover border shadow-lg">
                     <DropdownMenuItem onClick={() => onNavigate('profile')}>
-                      <User className="mr-2 h-4 w-4" />
+                      <_User className="mr-2 h-4 w-4" />
                       Profile
                     </DropdownMenuItem>
                     {onLogout && (

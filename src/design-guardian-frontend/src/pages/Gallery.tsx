@@ -11,34 +11,35 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { Search, Filter, Eye, Image as ImageIcon } from 'lucide-react';
+import { User, Design } from "../declarations/main/main.did"
+import { useSession } from "../context/sessionContext"
 
-interface Pattern {
-  id: string;
-  name: string;
-  description: string;
-  designType: string;
-  isPrivate3D: boolean;
-  canvasData: string;
-  createdAt: string;
-}
+// interface Pattern {
+//   id: string;
+//   name: string;
+//   description: string;
+//   designType: string;
+//   isPrivate3D: boolean;
+//   canvasData: string;
+//   createdAt: string;
+// }
 
 interface GalleryProps {
-  user: {
-    name: string;
-    email?: string;
-  };
+  user: User | null;
 }
 
 export const Gallery = ({ user }: GalleryProps) => {
-  const [patterns, setPatterns] = useState<Pattern[]>([]);
+
+  const { backend } = useSession();
+  const [patterns, setPatterns] = useState<Design[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState('all');
-  const [filteredPatterns, setFilteredPatterns] = useState<Pattern[]>([]);
+  const [filterType, setFilterType] = useState<string | null>(null);
+  const [filteredPatterns, setFilteredPatterns] = useState<Design[]>([]);
 
   useEffect(() => {
     // Load saved patterns from localStorage (only public ones for gallery)
     const savedPatterns = JSON.parse(localStorage.getItem('savedPatterns') || '[]');
-    const publicPatterns = savedPatterns.filter((pattern: Pattern) => !pattern.isPrivate3D);
+    const publicPatterns = savedPatterns.filter((design: Design) => !design.visible3DRendering);
     setPatterns(publicPatterns);
     setFilteredPatterns(publicPatterns);
   }, []);
@@ -55,8 +56,8 @@ export const Gallery = ({ user }: GalleryProps) => {
     }
 
     // Filter by design type
-    if (filterType !== 'all') {
-      filtered = filtered.filter(pattern => pattern.designType === filterType);
+    if (filterType) {
+      filtered = filtered.filter(design => design.kind === filterType);
     }
 
     setFilteredPatterns(filtered);
@@ -201,7 +202,7 @@ export const Gallery = ({ user }: GalleryProps) => {
                     {pattern.description || 'No description provided'}
                   </p>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>By {user.name}</span>
+                    <span>By {user?.name}</span>
                     <span>{new Date(pattern.createdAt).toLocaleDateString()}</span>
                   </div>
                 </CardContent>

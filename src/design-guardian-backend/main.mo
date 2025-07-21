@@ -11,6 +11,7 @@ actor {
   type User = Types.User;
   type Design = Types.Design;
   type DesignId = Types.DesignId;
+  public type KindDesign = Types.KindDesign;
   
 
   stable let users = Map.new<Principal, User>();

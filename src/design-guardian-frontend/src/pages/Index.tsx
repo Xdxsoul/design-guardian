@@ -6,23 +6,28 @@ import { Dashboard } from '@/pages/Dashboard';
 import { DesignStudio } from '@/pages/DesignStudio';
 import { Gallery } from '@/pages/Gallery';
 import { Toaster } from '@/components/ui/sonner';
+import { useSession } from "../context/sessionContext";
 
 const Index = () => {
-  const [currentPage, setCurrentPage] = useState('register');
-  const [user, setUser] = useState<{ name: string; email?: string } | null>(null);
 
-  const handleRegister = (userData: { name: string; email?: string }) => {
-    setUser(userData);
+  const {user, isAuthenticated, updateUser, identity, backend} = useSession();
+  const [currentPage, setCurrentPage] = useState((isAuthenticated && !user) ? 'register': "dashboard");
+
+
+  const handleRegister = async (userData: { name: string; email?: string; avatar?: Uint8Array }) => {
+    const newUser = await backend.register({name: userData.name, email: [userData.email], avatar: [userData.avatar]});
+    if("ok" in newUser){
+      updateUser(newUser.ok);
+    };
     setCurrentPage('dashboard');
   };
 
-  const handleUpdateUser = (userData: { name: string; email?: string }) => {
-    setUser(userData);
-  };
+  console.log(import.meta.env.VITE_CANISTER_ID)
+
 
   const handleLogout = () => {
-    setUser(null);
-    setCurrentPage('register');
+    updateUser(null);
+    // setCurrentPage('register');
   };
 
   const renderPage = () => {
@@ -30,13 +35,13 @@ const Index = () => {
       case 'register':
         return <Register onRegister={handleRegister} onNavigate={setCurrentPage} />;
       case 'profile':
-        return user ? <Profile user={user} onUpdateUser={handleUpdateUser} /> : null;
+        return user ? <Profile user={user} onUpdateUser={() => console.log("hola")} /> : null;
       case 'dashboard':
-        return user ? <Dashboard user={user} onNavigate={setCurrentPage} /> : null;
+        return <Dashboard user={user} onNavigate={setCurrentPage} />;
       case 'design':
         return user ? <DesignStudio onNavigate={setCurrentPage} /> : null;
       case 'gallery':
-        return user ? <Gallery user={user} /> : null;
+        return <Gallery user={user} />;
       default:
         return user ? <Dashboard user={user} onNavigate={setCurrentPage} /> : <Register onRegister={handleRegister} onNavigate={setCurrentPage} />;
     }

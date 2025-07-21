@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Palette, Plus, Eye, Edit, Trash2, Image } from 'lucide-react';
+import { User } from "../declarations/main/main.did"
 
 interface Pattern {
   id: string;
@@ -15,10 +16,7 @@ interface Pattern {
 }
 
 interface DashboardProps {
-  user: {
-    name: string;
-    email?: string;
-  };
+  user: User | null;
   onNavigate: (page: string) => void;
 }
 
@@ -63,7 +61,7 @@ export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">
-            Welcome back, {user.name}! 👋
+            Welcome {user && "back" + user.name }! 👋
           </h1>
           <p className="text-muted-foreground">
             Manage your textile designs and track your creative journey
