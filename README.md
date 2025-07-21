@@ -1,6 +1,6 @@
 ## 🧵 Project: Design Guardian
 #### "Your design, your property"
-##### Hackathon: WCHL25
+##### Hackathon: WCHL25 
 ---
 
 ### 🔍 Problem Statement
@@ -16,19 +16,12 @@ Fashion designers face critical challenges in protecting and monetizing their cr
 
 ---
 
-### 🎯 Goal
-Empower fashion designers to create, protect, visualize and sell their work as verifiable digital assets, ensuring full control over their intellectual property and usage rights.
-
-[Fashion show module](./goals/fashion_show.md)
-
-[Gaming Integration](./goals/Gaming_Platform_Integration_Module.md)
-
----
 
 ### 💡 Proposed Solution
 Design Guardian acts as a digital guardian of designers' rights, allowing them to **securely and easily** register their creations, as well as:
 
 + Design and save fashion designs on-platform.
++ Import and export their designs using standard formats such as DXF, SVG, PLT, PDF, and others commonly used in fashion pattern design and manufacturing.
 + View their design in a 3D simulator on garments.
 + Tokenize it as an **ICRC-7** NFT:
 + The public side of the NFT shows the **3D** rendering.
@@ -42,7 +35,52 @@ Design Guardian acts as a digital guardian of designers' rights, allowing them t
 
 ---
 
-### 🧩 System Components
+### 🎯 Goal
+Empower fashion designers to create, protect, visualize and sell their work as verifiable digital assets, ensuring full control over their intellectual property and usage rights.
+
+[Fashion show module](./goals/fashion_show.md)
+
+[Gaming Integration](./goals/Gaming_Platform_Integration_Module.md)
+
+---
+
+### 🔍 Stage 1 — Clasification round — Features Breakdown
+
+During this initial stage, Design Guardian lays the foundation for the future ecosystem by focusing on core user functionality and modular infrastructure.
+
+#### 🧵 Core Fashion Design Workflow
+- 👩‍🎨 **Designer workspace** to create fashion designs with configurable parameters.
+- 💾 **Persistent saving** of work-in-progress patterns for iterative design.
+- ✏️ **Design editing tools** supporting resizing, layering, coloring, and annotations.
+
+#### 🎨 Personal Gallery
+- 🖼️ Private, user-specific gallery of all designs.
+- 🗂️ Sort by creation date, name, or status (draft / finalized).
+- 🔒 Visibility controlled by the user (for personal use or future tokenization).
+
+#### 👤 Profile System
+- ✍️ Public nickname and bio
+- 🧩 Optional metadata like email and phone (private)
+- 📊 Internal dashboards with design stats (WIP, finalized, last edited)
+
+#### 🧱 Modular Architecture for Scalability
+- 🧠 Codebase prepared for future modules:
+  - Tokenization
+  - NFT sales
+  - Chat & social features
+  - Event hosting
+- 🔁 Decoupled components that enable isolated updates and improvements
+
+#### 🔐 Identity & Access Management
+- 🛂 Login with Internet Identity / Plug / NFID
+- 🔐 Secure ownership mapping to Principal ID
+- 🧾 Smart storage permissions tied to identity
+
+**Goal of this stage:** Validate the UX and technical core of the platform, ensuring creators can start designing, managing, and organizing their digital fashion work.
+
+---
+
+## 🧩 System Components
 #### 🖼️ Frontend
 + Pattern editor
 
@@ -108,4 +146,28 @@ Design Guardian acts as a digital guardian of designers' rights, allowing them t
 + Authentication	Internet Identity / Plug / NFID
 + Storage	On-chain (ICP)
 + 3D Rendering	WebGL / Three.js
+
+___
+
+### Local Deploy Instructions
+Clone repository
+``` sh
+git clone https://github.com/Xdxsoul/design-guardian.git
+cd design-guardian
+```
+Install mops modules
+if not mops installed
+```sh
+  npm i -g ic-mops
+```
+```sh
+mops install
+```
+Install pullable canister (internet Identity)
+
+```sh
+dfx deps pull
+dfx deps init
+dfx deps deploy
+```
 
