@@ -159,6 +159,33 @@ During this initial stage, Design Guardian lays the foundation for the future ec
 
 ___
 
+#### Mainnet MVP Captures
+Initial view
+![alt text](image.png) 
+
+Login Modal Identity provider
+
+![alt text](image-1.png)
+
+On login
+![alt text](image-2.png)
+
+Provisional Canva
+![alt text](image-3.png)
+
+Save Pattern modal
+![alt text](image-4.png)
+
+Saved Pattern
+![alt text](image-5.png)
+
+User Patterns
+![alt text](image-6.png)
+
+Global Galery
+![alt text](image-7.png)
+___
+
 ### Local Deploy Instructions
 ##### 1 Clone repository
 ``` sh
