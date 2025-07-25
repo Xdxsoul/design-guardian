@@ -1,14 +1,22 @@
 ## 🧵 Project: Design Guardian
 #### "Your design, your property"
-##### Hackathon: WCHL25 
+##### Hackathon: WCHL25
+
+#### [Pitch Deck](https://drive.google.com/file/d/1LZv2ckAahK4fr6-jQdiI9BN8rACOxUW_/view)
+
 ---
 
 ### 🔍 Problem Statement
 Fashion designers face critical challenges in protecting and monetizing their creations:
 
-✂️ Plagiarism and unauthorized use: There is no simple, global way to prove authorship or ownership over fashion designs.
+✂️ Lack of Traceability and Verification
+The absence of verifiable and permanent records prevents designers and buyers from establishing a chain of trust.
+Research published by the World Intellectual Property Organization (WIPO) indicates that the fashion industry is one of the least digitized in terms of intellectual property traceability, which harms not only legal defenses against copying but also the perceived value of designs.
 
-🌍 No traceability or authentication: Without verified records, proving authenticity or origin is hard, undermining trust in digital transactions.
+🧵 The Gap Between Physical and Digital
+Most print-on-demand or e-commerce marketplaces operate as islands disconnected from any intellectual property registration system.
+This makes the journey from creative design to the sale of physical products inefficient, opaque, and risky for designers.
+Furthermore, there are no unified standards for interoperation between fashion, 3D design, and commerce platforms.
 
 🧵 Disconnected digital-physical market: Traditional e-commerce and fashion platforms aren't connected to digital IP tools.
 
@@ -150,24 +158,33 @@ During this initial stage, Design Guardian lays the foundation for the future ec
 ___
 
 ### Local Deploy Instructions
-Clone repository
+##### 1 Clone repository
 ``` sh
 git clone https://github.com/Xdxsoul/design-guardian.git
 cd design-guardian
 ```
-Install mops modules
-if not mops installed
+##### 2 Install mops modules
+*if not mops installed*
 ```sh
   npm i -g ic-mops
 ```
 ```sh
 mops install
 ```
-Install pullable canister (internet Identity)
+##### 3 Install pullable canister (internet Identity)
 
 ```sh
 dfx deps pull
 dfx deps init
 dfx deps deploy
 ```
-
+##### Deploy backend
+```
+cd src/design-guardian-frontend
+npm run deploy
+```
+##### Deploy frontend
+```sh
+npm run build
+dfx deploy frontend
+```

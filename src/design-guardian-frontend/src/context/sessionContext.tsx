@@ -6,7 +6,7 @@ import { AuthClient } from '@dfinity/auth-client';
 import ModalProviderSelect from '../components/auth/ModalProviderSelect';
 
 
-const canisterId = import.meta.env.VITE_CANISTER_ID_DESIGN_GUARDIAN_BACKEND as string
+const canisterId = import.meta.env.VITE_CANISTER_ID_MAIN as string
 console.log(canisterId)
 const host = import.meta.env.VITE_DFX_NETWORK === "local" ? "http://localhost:4943/?canisterId=rdmx6-jaaaa-aaaaa-aaadq-cai" : "https://identity.ic0.app";
 

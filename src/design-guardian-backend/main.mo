@@ -20,6 +20,14 @@ actor {
 
   stable var lastDesignID = 0;
 
+  public shared ({ caller }) func whoAmi(): async Principal {
+    caller
+  };
+
+  public func getLetra(name: Text): async Text {
+    name # " Hola"
+  };
+
 
   public shared ({ caller }) func register({name: Text; email: ?Text; avatar: ?Blob}): async Result.Result<User, Text> {
     if(Principal.isAnonymous(caller)) {
