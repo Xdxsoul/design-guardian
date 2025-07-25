@@ -3,6 +3,8 @@
 ##### Hackathon: WCHL25
 
 #### [Pitch Deck](https://drive.google.com/file/d/1LZv2ckAahK4fr6-jQdiI9BN8rACOxUW_/view)
+#### [Video Demo](https://inely-hqaaa-aaaab-qb4uq-cai.icp0.io/)
+#### [Roadmap](./roadmap.md)
 
 ---
 
@@ -155,6 +157,33 @@ During this initial stage, Design Guardian lays the foundation for the future ec
 + Storage	On-chain (ICP)
 + 3D Rendering	WebGL / Three.js
 
+___
+
+#### Mainnet MVP Captures
+Initial view
+![alt text](image.png) 
+
+Login Modal Identity provider
+
+![alt text](image-1.png)
+
+On login
+![alt text](image-2.png)
+
+Provisional Canva
+![alt text](image-3.png)
+
+Save Pattern modal
+![alt text](image-4.png)
+
+Saved Pattern
+![alt text](image-5.png)
+
+User Patterns
+![alt text](image-6.png)
+
+Global Galery
+![alt text](image-7.png)
 ___
 
 ### Local Deploy Instructions

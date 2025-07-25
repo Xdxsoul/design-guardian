@@ -5,6 +5,9 @@ import Result "mo:base/Result";
 import Time "mo:base/Time";
 import Buffer "mo:base/Buffer";
 import Utils "./utils";
+import { print } "mo:base/Debug";
+import Array "mo:base/Array";
+import Iter "mo:base/Iter";
 
 actor {
 
@@ -41,6 +44,7 @@ actor {
             id: Principal = caller;
             registerDate: Int = Time.now();
             name: Text = name;
+            bio = null;
             logo = null;
             avatar;
             email: ?Text = email;
@@ -61,7 +65,8 @@ actor {
   };
 
   public shared ({ caller }) func logIn(): async ?User {
-    Map.get<Principal, User>(users, Map.phash, caller)
+    let response = Map.get<Principal, User>(users, Map.phash, caller);
+    response
   };
 
   public shared ({ caller }) func editProfile({name: Text; email: ?Text; phone: ?Nat}): async ?User{
@@ -104,21 +109,63 @@ actor {
 
   // CRUD Designs
 
-  public shared ({ caller }) func createDesign(data: Types.DesignDataInit): async (){
-    let {name; sourceFiles; kind; description} = data;
-    lastDesignID += 1;
-    let design: Design = {
-      id = lastDesignID;
-      kind;
-      name;
-      description;
-      creator: Principal = caller;
-      visible3DRendering = true;
-      dateCreation: Int = Time.now();
-      lastModification: Int = Time.now();
-      sourceFiles: [Types.File] = sourceFiles;
+  public shared ({ caller }) func createDesign(data: Types.DesignDataInit): async {#Ok: Nat; #Err: Text}{
+    let user = Map.get<Principal, User>(users, Map.phash, caller);
+    switch user {
+      case null { return #Err("Caller is not an user") };
+      case ( ?user ) {
+        let {name; sourceFiles; kind; description; coverImage} = data;
+        lastDesignID += 1;
+        let design: Design = {
+          id = lastDesignID;
+          kind;
+          name;
+          description;
+          creator: Principal = caller;
+          creatorName = user.name;
+          visible3DRendering = true;
+          dateCreation: Int = Time.now();
+          lastModification: Int = Time.now();
+          sourceFiles: [Types.File] = sourceFiles;
+          coverImage
+        };
+        ignore Map.put<DesignId, Design>(designs, Map.nhash, design.id, design);
+        let updateDesignIds = Array.tabulate<DesignId>(
+          user.designs.size() + 1,
+          func i = if (i < user.designs.size()) { user.designs[i] } else { design.id }
+        );
+        ignore Map.put<Principal, User>(
+          users, 
+          Map.phash,
+          caller,
+          {user with designs = updateDesignIds}
+        );
+        #Ok(lastDesignID)
+      }
+    }  
+  };
+
+  public shared ({ caller }) func getMyGalery(): async [Types.DesignPreview]{
+    let user = Map.get<Principal, User>(users, Map.phash, caller);
+    switch user {
+      case null { return [] };
+      case ( ?user ) {
+        getDesignsPreviewList(user.designs)
+      }
+    }
+  };
+
+  func getDesignsPreviewList(ids: [Nat]): [Types.DesignPreview] {
+    let bufferResult = Buffer.Buffer<Types.DesignPreview>(0);
+    for(id in ids.vals()){
+      switch(Map.get<DesignId, Design>(designs, Map.nhash, id)){
+        case ( ?design ) {
+          bufferResult.add(design)
+        };
+        case _ {}
+      };
     };
-    ignore Map.put<DesignId, Design>(designs, Map.nhash, design.id, design)
+    Buffer.toArray(bufferResult)
   };
 
   public shared ({ caller }) func readDesign(id: Nat): async ?Design {
@@ -133,6 +180,12 @@ actor {
         }
       } 
     }
+  };
+
+  public query func feed(): async [Types.DesignPreview]{
+    let arrayDesigns = Iter.toArray(Map.vals<DesignId, Design>(designs));
+    let size = if (arrayDesigns.size() < 30) { arrayDesigns.size() } else { 30 };
+    Array.tabulate<Types.DesignPreview>( size, func i = arrayDesigns[i] )
   };
 
   public shared ({ caller }) func updateDesign(id: Nat, sourceFiles: [Types.File]): async ?Design {

@@ -11,7 +11,7 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { Search, Filter, Eye, Image as ImageIcon } from 'lucide-react';
-import { User, Design } from "../declarations/main/main.did"
+import { User, DesignPreview } from "../declarations/main/main.did"
 import { useSession } from "../context/sessionContext"
 
 // interface Pattern {
@@ -31,45 +31,20 @@ interface GalleryProps {
 export const Gallery = ({ user }: GalleryProps) => {
 
   const { backend } = useSession();
-  const [patterns, setPatterns] = useState<Design[]>([]);
+  const [patterns, setPatterns] = useState<DesignPreview[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string | null>(null);
-  const [filteredPatterns, setFilteredPatterns] = useState<Design[]>([]);
+  const [filteredPatterns, setFilteredPatterns] = useState<DesignPreview[]>([]);
 
   useEffect(() => {
-    // Load saved patterns from localStorage (only public ones for gallery)
-    const savedPatterns = JSON.parse(localStorage.getItem('savedPatterns') || '[]');
-    const publicPatterns = savedPatterns.filter((design: Design) => !design.visible3DRendering);
-    setPatterns(publicPatterns);
-    setFilteredPatterns(publicPatterns);
-  }, []);
 
-  useEffect(() => {
-    let filtered = patterns;
-
-    // Filter by search term
-    if (searchTerm) {
-      filtered = filtered.filter(pattern =>
-        pattern.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        pattern.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+    const fetchPatterns = async () => {
+      setPatterns(await backend.feed())
     }
-
-    // Filter by design type
-    // if (filterType) {
-    //   filtered = filtered.filter(design => design.kind === filterType);
-    // }
-
-    setFilteredPatterns(filtered);
-  }, [patterns, searchTerm, filterType]);
-
-  const whoAmi = async () => {
-    const response = await backend.whoAmi();
-    console.log(response)
+    fetchPatterns()
+    console.log(patterns)
   
-  };
-  
-  whoAmi()
+  }, [backend]);
 
   const getDesignTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
@@ -147,7 +122,7 @@ export const Gallery = ({ user }: GalleryProps) => {
         </Card>
 
         {/* Gallery Grid */}
-        {filteredPatterns.length === 0 ? (
+        {patterns.length === 0 ? (
           <Card className="text-center py-12 shadow-lg border-0 bg-card/80 backdrop-blur-sm">
             <CardContent>
               {patterns.length === 0 ? (
@@ -180,7 +155,7 @@ export const Gallery = ({ user }: GalleryProps) => {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredPatterns.map((pattern) => (
+            {patterns.map((pattern) => (
               <Card 
                 key={pattern.id} 
                 className="group hover:shadow-lg transition-all duration-300 border-0 bg-card/80 backdrop-blur-sm hover:scale-105"
@@ -197,21 +172,21 @@ export const Gallery = ({ user }: GalleryProps) => {
                   </Badge> */}
                 </CardHeader>
                 <CardContent>
-                  {/* {pattern.canvasData && (
-                    <div className="mb-3 overflow-hidden rounded-lg">
-                      <img
-                        src={pattern.canvasData}
-                        alt={pattern.name}
-                        className="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                    </div>
-                  )} */}
+                  
+                  <div className="mb-3 overflow-hidden rounded-lg">
+                    <img
+                      src={String.fromCharCode(... pattern.coverImage.data)}
+                      alt={pattern.name}
+                      className="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                  </div>
+                  
                   <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                     {pattern.description || 'No description provided'}
                   </p>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>By {user?.name}</span>
-                    <span>{new Date(Number(pattern.dateCreation)).toLocaleDateString()}</span>
+                    <span>By {pattern.creatorName}</span>
+                    <span>{new Date(Number(pattern.dateCreation)/1000000).toLocaleDateString()}</span>
                   </div>
                 </CardContent>
               </Card>

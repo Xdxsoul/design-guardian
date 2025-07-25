@@ -18,7 +18,7 @@ const ModalProviderSelect: React.FC<CustomModalProps> = ({ isOpen, internetIdent
 				<h2 className='mb-10 text-white text-[20px] text-center'>Choose an Identity Provider</h2>
 				<div className="button !h-10 !flex !mb-4 !items-center !justify-center">
 					
-					<IntIdIcon className="w-38" onClick={() => onSelectProvider(internetIdentityUrl)}/>
+					<IntIdIcon className="w-[120px]" onClick={() => onSelectProvider(internetIdentityUrl)}/>
 				</div>
 				<div
 					className="button !h-10 !flex !flex-row !items-center !justify-center gap-1"

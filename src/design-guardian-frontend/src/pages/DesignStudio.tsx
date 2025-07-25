@@ -4,6 +4,7 @@ import { SavePatternDialog } from '@/components/SavePatternDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Save, Palette } from 'lucide-react';
+import { useSession  } from '../context/sessionContext';
 
 interface DesignStudioProps {
   onNavigate: (page: string) => void;
@@ -12,6 +13,8 @@ interface DesignStudioProps {
 export const DesignStudio = ({ onNavigate }: DesignStudioProps) => {
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [currentCanvasData, setCurrentCanvasData] = useState('');
+
+  const { backend } = useSession();
 
   const handleSavePattern = (canvasData: string) => {
     setCurrentCanvasData(canvasData);

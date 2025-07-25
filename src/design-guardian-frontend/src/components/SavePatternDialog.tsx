@@ -18,6 +18,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { useSession  } from '../context/sessionContext';
+import { File } from '../declarations/main/main.did'
 
 interface SavePatternDialogProps {
   open: boolean;
@@ -25,12 +27,24 @@ interface SavePatternDialogProps {
   canvasData: string;
 }
 
+const getKind = (designType: string) => {
+  switch (designType) {
+    case 'footwear': return { 'Footwear' : null };
+    case 'clothing': return { 'Clothing' : null };
+    case 'accessories': return { 'Accessories' : null };
+    case 'textile-printing': return {'TextilePrinting' : null };
+    default: return { 'Clothing' : null }
+  }
+};
+
 export const SavePatternDialog = ({ open, onOpenChange, canvasData }: SavePatternDialogProps) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [designType, setDesignType] = useState('');
-  const [isPrivate3D, setIsPrivate3D] = useState(false);
+  const [visible3DRendering, setVisible3DRendering] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { backend } = useSession();
 
   const designTypes = [
     { value: 'footwear', label: 'Footwear' },
@@ -55,31 +69,36 @@ export const SavePatternDialog = ({ open, onOpenChange, canvasData }: SavePatter
     try {
       // Simulate saving the pattern
       await new Promise(resolve => setTimeout(resolve, 1000));
+        // sourceFiles: [File]; 
+        // kind: KindDesign;
+        // name: Text;
+        // description: Text;
+      const canvasDataString: string = canvasData; 
+      const encoder = new TextEncoder();
+      const canvasUint8Array = encoder.encode(canvasDataString);
 
       const pattern = {
-        id: Date.now().toString(),
         name: name.trim(),
         description: description.trim(),
-        designType,
-        isPrivate3D,
-        canvasData,
-        createdAt: new Date().toISOString(),
+        kind: getKind(designType),
+        visible3DRendering,
+        sourceFiles: [],
+        // coverImage: "sfsaf"
+        coverImage: {data: canvasUint8Array , name: name.trim() + "_coverImage", mimeType: 'data:image/png;base64,'}, // Obtener una imagen de muestra
       };
 
-      // Store in localStorage for now (in real app, this would be saved to backend)
-      const savedPatterns = JSON.parse(localStorage.getItem('savedPatterns') || '[]');
-      savedPatterns.push(pattern);
-      localStorage.setItem('savedPatterns', JSON.stringify(savedPatterns));
+      const response = await backend.createDesign(pattern)
+      if("Ok" in response) {
+        toast.success('Pattern saved successfully! ' + Number(response.Ok)).toString();
+      }
 
-      toast.success('Pattern saved successfully!');
-      
-      // Reset form
       setName('');
       setDescription('');
       setDesignType('');
-      setIsPrivate3D(false);
+      setVisible3DRendering(false);
       onOpenChange(false);
     } catch (error) {
+      console.log(error)
       toast.error('Failed to save pattern');
     } finally {
       setIsLoading(false);
@@ -142,8 +161,8 @@ export const SavePatternDialog = ({ open, onOpenChange, canvasData }: SavePatter
           <div className="flex items-center space-x-2">
             <Checkbox
               id="privacy"
-              checked={isPrivate3D}
-              onCheckedChange={(checked) => setIsPrivate3D(checked as boolean)}
+              checked={visible3DRendering}
+              onCheckedChange={(checked) => setVisible3DRendering(checked as boolean)}
             />
             <Label htmlFor="privacy" className="text-sm">
               Make 3D rendering private

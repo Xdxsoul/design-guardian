@@ -2,20 +2,22 @@ import { useEffect, useState } from 'react';
 import { useSession } from '../context/sessionContext';
 import LoginButton from './auth/LoginButton';
 import LogoutButton from './auth/LogoutButton';
+import MenuUser from './MenuUser';
 import RegisterButton from './register/RegisterButton';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { HomeIcon, BellIcon, MetricsIcon, MessageIcon } from "./Icons";
+import logo from '../assets/logo.png'
 
 const Header = () => {
   const { user, updateUser, isAuthenticated, identity, backend } = useSession();
   const [name, setName] = useState("");
   const [showModalRegister, setShowModalRegister] = useState(false);
-  const [email, setEmail] = useState<string | null>(null);
+  const [email, setEmail] = useState<string>("");
+   const [emailError, setEmailError] = useState<string | null>(null);
   const [avatar, setAvatar] = useState<Uint8Array | null>(null);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const location = useLocation();
-
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -41,18 +43,54 @@ const Header = () => {
     setName(e.target.value);
   };
 
+  const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    // Opcional: limpiar el error mientras el usuario escribe
+    if (emailError && validateEmail(newEmail)) {
+      setEmailError(null);
+    }
+  };
+
+  const validateEmail = (email: string): boolean => {
+    // Expresión regular para validar emails.
+    // Esta es una regex robusta para la mayoría de los casos.
+    const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return re.test(email);
+  };
+
+
+
   const handleRegister = async () => {
+ 
     if (name.length < 3 || name.length > 30) { return }
+
+    if (email === null || email === '') {
+      setEmail(null);
+      setEmailError(null); 
+    }
+    else if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email format (e.g. user@domain.com).');
+      return; 
+    }
+    else {
+      setEmailError(null);
+    }
+
     const registerResult = await backend.register({
       name: name.trim(),
-      email: email === null ? [] : [email],
+      email: email === null ? [] : [email.trim()],
       avatar: avatar === null ? [] : [avatar],
     });
+    console.log("Register Result:", registerResult);
 
     if ("ok" in registerResult) {
       setShowModalRegister(false);
       updateUser(registerResult.ok)
       setName("");
+      setEmail(null)
+    } else {
+      console.error("Registration failed:", registerResult);
     }
   }
 
@@ -62,13 +100,15 @@ const Header = () => {
       <header className="w-full flex justify-between items-center p-1 bg-gradient-to-t from-[#00000000] to-blue-800 pb-4 text-white select-none h-[60px]">
         <div className='flex items-center'>
 
+        <img src={logo} alt="" className='w-[250px] ml-[15px] mt-[350px] hover:scale-110 transition-transform duration-300' />
         </div>
+
 
 
         <div className="absolute left-1/2 transform -translate-x-1/2 text-center">
           <h1
             onClick={() => navigate("./")}
-            className="hidden sm:block text-[34px] font-bold cursor-pointer "
+            className="hidden sm:block text-[34px] font-bold cursor-pointer hover:scale-110 transition-transform duration-300"
           >
             Design Guardian
           </h1>
@@ -78,10 +118,6 @@ const Header = () => {
           />
         </div>
 
-
-
-
-
         <div className="flex items-center justify-end w-[200px]">
 
           {!isAuthenticated ? (
@@ -90,7 +126,7 @@ const Header = () => {
             <>
               <div className='flex items-center'>
               </div>
-              user.name
+              <MenuUser />
             </>
           ) : (
             <>
@@ -124,6 +160,18 @@ const Header = () => {
               value={name}
               onChange={handleChangeName}
               className="border p-2 w-full mb-2 rounded-full text-center"
+            />
+
+            <input
+              type="email"
+              maxLength={35}
+              placeholder="email"
+              value={email}
+              onChange={handleChangeEmail}
+              className={`border p-2 w-full mb-2 rounded-full text-center 
+                ${emailError ? 'border-red-500 text-red-500 placeholder-red-300' : ''}`
+              }
+              
             />
 
 

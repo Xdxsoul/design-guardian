@@ -3,17 +3,18 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Palette, Plus, Eye, Edit, Trash2, Image } from 'lucide-react';
-import { User } from "../declarations/main/main.did"
+import { User, DesignPreview } from "../declarations/main/main.did"
+import { useSession } from "../context/sessionContext"
 
-interface Pattern {
-  id: string;
-  name: string;
-  description: string;
-  designType: string;
-  isPrivate3D: boolean;
-  canvasData: string;
-  createdAt: string;
-}
+// interface Pattern {
+//   id: string;
+//   name: string;
+//   description: string;
+//   designType: string;
+//   isPrivate3D: boolean;
+//   canvasData: string;
+//   createdAt: string;
+// }
 
 interface DashboardProps {
   user: User | null;
@@ -21,13 +22,20 @@ interface DashboardProps {
 }
 
 export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
-  const [patterns, setPatterns] = useState<Pattern[]>([]);
+  const [patterns, setPatterns] = useState<DesignPreview[]>([]);
+  const { backend } = useSession()
 
   useEffect(() => {
-    // Load saved patterns from localStorage
-    const savedPatterns = JSON.parse(localStorage.getItem('savedPatterns') || '[]');
-    setPatterns(savedPatterns);
-  }, []);
+    const fetchFeed = async () => {
+      try {
+        const designs = await backend.getMyGalery();
+        setPatterns(designs);
+      } catch (error) {
+        console.error("Error fetching feed:", error);
+      }
+    };
+    fetchFeed();
+  }, [backend]);
 
   const getDesignTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
@@ -49,10 +57,8 @@ export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
     return colors[type] || 'bg-gray-100 text-gray-800';
   };
 
-  const deletePattern = (id: string) => {
-    const updatedPatterns = patterns.filter(p => p.id !== id);
-    setPatterns(updatedPatterns);
-    localStorage.setItem('savedPatterns', JSON.stringify(updatedPatterns));
+  const deletePattern = (id: number) => {
+    console.log("Delete is not implemented yet")
   };
 
   return (
@@ -61,7 +67,7 @@ export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">
-            Welcome {user && "back" + user.name }! 👋
+            Welcome {user && "back, " + user.name } !!! 👋
           </h1>
           <p className="text-muted-foreground">
             Manage your textile designs and track your creative journey
@@ -69,20 +75,20 @@ export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        { user && <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-primary-foreground/80">Total Patterns</p>
-                  <p className="text-2xl font-bold">{patterns.length}</p>
+                  <p className="text-2xl font-bold">{user.designs.length}</p>
                 </div>
                 <Palette className="h-8 w-8 text-primary-foreground/80" />
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          {/* <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -92,7 +98,7 @@ export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
                 <Eye className="h-8 w-8 text-muted-foreground" />
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
 
           <Card>
             <CardContent className="p-6">
@@ -117,7 +123,7 @@ export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </div>}
 
         {/* Quick Actions */}
         <div className="mb-8">
@@ -145,7 +151,7 @@ export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
         <div>
           <h2 className="text-xl font-semibold mb-4">Your Patterns</h2>
           
-          {patterns.length === 0 ? (
+          {user?.designs.length === 0 ? (
             <Card className="text-center py-12">
               <CardContent>
                 <Palette className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -161,7 +167,7 @@ export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {patterns.map((pattern) => (
+              {patterns.reverse().map((pattern) => (
                 <Card key={pattern.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
@@ -169,26 +175,26 @@ export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => deletePattern(pattern.id)}
+                        onClick={() => deletePattern(Number(pattern.id))}
                         className="text-destructive hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Badge className={getDesignTypeColor(pattern.designType)}>
-                        {getDesignTypeLabel(pattern.designType)}
-                      </Badge>
-                      {pattern.isPrivate3D && (
+                      {/* <Badge className={getDesignTypeColor(pattern.kind)}>
+                        {getDesignTypeLabel(pattern.kind)}
+                      </Badge> */}
+                      {/* {pattern.isPrivate3D && (
                         <Badge variant="outline">Private 3D</Badge>
-                      )}
+                      )} */}
                     </div>
                   </CardHeader>
                   <CardContent>
-                    {pattern.canvasData && (
+                    {pattern.coverImage && (
                       <div className="mb-3">
                         <img
-                          src={pattern.canvasData}
+                          src={String.fromCharCode(... pattern.coverImage.data)}
                           alt={pattern.name}
                           className="w-full h-32 object-cover rounded border"
                         />
@@ -198,7 +204,7 @@ export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
                       {pattern.description || 'No description provided'}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Created: {new Date(pattern.createdAt).toLocaleDateString()}
+                      Created: {new Date((Number(pattern.dateCreation)/1000000)).toLocaleDateString() }
                     </p>
                   </CardContent>
                 </Card>

@@ -10,6 +10,7 @@ module {
         id: Principal;
         registerDate: Int;
         name: Text;
+        bio: ?Text;
         email: ?Text;
         phone: ?Nat;
         logo: ?Blob;
@@ -51,6 +52,8 @@ module {
         kind: KindDesign;
         name: Text;
         description: Text;
+        coverImage: File;
+        visible3DRendering: Bool;
     };
 
     public type Design = {
@@ -59,10 +62,23 @@ module {
         name: Text;
         description: Text;
         creator: Principal;
+        creatorName: Text;
         visible3DRendering: Bool;
         dateCreation: Int;
         lastModification: Int;
-        sourceFiles: [File]
+        sourceFiles: [File];
+        coverImage: File;
+    };
+
+    public type DesignPreview = {
+        id: DesignId;
+        name: Text;
+        description: Text;
+        creator: Principal;
+        creatorName: Text;
+        coverImage: File;
+        dateCreation: Int;
+        kind: KindDesign;
     };
 
 
