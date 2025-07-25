@@ -8,8 +8,9 @@ import ModalProviderSelect from '../components/auth/ModalProviderSelect';
 
 const canisterId = import.meta.env.VITE_CANISTER_ID_MAIN as string
 console.log(canisterId)
-const host = import.meta.env.VITE_DFX_NETWORK === "local" ? "http://localhost:4943/?canisterId=rdmx6-jaaaa-aaaaa-aaadq-cai" : "https://identity.ic0.app";
 
+const host = import.meta.env.VITE_DFX_NETWORK === "local" ? "http://localhost:4943/?canisterId=rdmx6-jaaaa-aaaaa-aaadq-cai" : "https://identity.ic0.app";
+const providerUrl = import.meta.env.VITE_DFX_NETWORK === "local" ? "http://rdmx6-jaaaa-aaaaa-aaadq-cai.localhost:4943" : "https://identity.ic0.app";
 type SessionContextType = {
   user: User | null;
   identity: Identity;
@@ -59,41 +60,36 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
 
   useEffect(() => {
     const setupAgent = async () => {
-      const agent = await HttpAgent.create({
+      console.log("Principal actual:", identity.getPrincipal().toText());
+      const agent = new HttpAgent({
         identity,
         host,
       });
+      if (import.meta.env.VITE_DFX_NETWORK === "local") {
+        await agent.fetchRootKey();
+      }
       setBackend(createActor(canisterId, { agent }));
-
     };
     setupAgent();
-  }, [identity]);
+  }, [ identity]);
 
 
   useEffect(() => {
 
     const getUser = async () => {
-      const attempts = [
-        backend.logIn(),
-      ];
-  
-      const results = await Promise.allSettled(attempts);
 
-      for (let i = 0; i < results.length; i++) {
-        const result = results[i];
-      
-        if (result.status === "fulfilled") {
-          const dataUser = result.value;
-          if (dataUser.length > 0) {
-            setUser(dataUser[0]);
-            break;
-          }
-        }
+
+      const result = await backend.logIn()
+      if (result.length > 0) {
+        setUser(result[0]);
+        setIsAuthenticated(true);
       }
     };
   
+    if (!identity.getPrincipal().isAnonymous()) {
     getUser();
-  }, [isAuthenticated, backend]);
+  };
+  }, [ backend, identity]);
   
 
   async function init() {
@@ -121,6 +117,7 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
       identityProvider: providerUrl,
       onSuccess: () => {
         const identity = authClient.getIdentity();
+        console.log("Login success. Principal:", identity.getPrincipal().toText());
         setIdentity(identity);
         setIsAuthenticated(true);
       },
@@ -155,7 +152,7 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
     >
       {children}
       <ModalProviderSelect
-        internetIdentityUrl= {host}
+        internetIdentityUrl= {providerUrl}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSelectProvider={handleProviderSelection}

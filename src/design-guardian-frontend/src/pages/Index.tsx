@@ -1,17 +1,18 @@
 import { useState } from 'react';
-import { Navbar } from '@/components/Navbar';
+// import { Navbar } from '@/components/Navbar';
 import { Register } from '@/pages/Register';
-import { Profile } from '@/pages/Profile';
+import  Profile  from '@/pages/Profile';
 import { Dashboard } from '@/pages/Dashboard';
 import { DesignStudio } from '@/pages/DesignStudio';
 import { Gallery } from '@/pages/Gallery';
 import { Toaster } from '@/components/ui/sonner';
 import { useSession } from "../context/sessionContext";
 
+
 const Index = () => {
 
   const {user, isAuthenticated, updateUser, identity, backend} = useSession();
-  const [currentPage, setCurrentPage] = useState((isAuthenticated && !user) ? 'register': "dashboard");
+  const [currentPage, setCurrentPage] = useState("galery");
 
 
   const handleRegister = async (userData: { name: string; email?: string; avatar?: Uint8Array }) => {
@@ -35,7 +36,7 @@ const Index = () => {
       case 'register':
         return <Register onRegister={handleRegister} onNavigate={setCurrentPage} />;
       case 'profile':
-        return user ? <Profile user={user} onUpdateUser={() => console.log("hola")} /> : null;
+        return user ? <Profile profile={user} /> : null;
       case 'dashboard':
         return <Dashboard user={user} onNavigate={setCurrentPage} />;
       case 'design':
@@ -43,19 +44,19 @@ const Index = () => {
       case 'gallery':
         return <Gallery user={user} />;
       default:
-        return user ? <Dashboard user={user} onNavigate={setCurrentPage} /> : <Register onRegister={handleRegister} onNavigate={setCurrentPage} />;
+        return user ? <Dashboard user={user} onNavigate={setCurrentPage} /> : <Gallery user={user} />;
     }
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {user && (
+      {/* {user && (
         <Navbar 
           user={user} 
           onNavigate={setCurrentPage} 
           onLogout={handleLogout}
         />
-      )}
+      )} */}
       {renderPage()}
       <Toaster />
     </div>

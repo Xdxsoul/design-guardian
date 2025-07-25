@@ -3,6 +3,8 @@
 ##### Hackathon: WCHL25
 
 #### [Pitch Deck](https://drive.google.com/file/d/1LZv2ckAahK4fr6-jQdiI9BN8rACOxUW_/view)
+#### [Video Demo](https://inely-hqaaa-aaaab-qb4uq-cai.icp0.io/)
+#### [Roadmap](./roadmap.md)
 
 ---
 
