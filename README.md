@@ -3,7 +3,8 @@
 ##### Hackathon: WCHL25
 
 #### [Pitch Deck](https://drive.google.com/file/d/1LZv2ckAahK4fr6-jQdiI9BN8rACOxUW_/view)
-#### [Video Demo](https://inely-hqaaa-aaaab-qb4uq-cai.icp0.io/)
+#### [Mainnet Deploy MVP](https://inely-hqaaa-aaaab-qb4uq-cai.icp0.io/)
+#### [Video Demo](https://drive.google.com/file/d/19L4-Rr84E3ygQv8f29EH6D_k8AiVtHbL/view?usp=drive_link)
 #### [Roadmap](./roadmap.md)
 
 ---
