@@ -18,7 +18,8 @@
 - Publishing on public gallery and integrated marketplace  
 - Direct sale and auction system  
 - Improved interface with:  
-  - Like button  
+  - Like button
+  - Design comments box
   - Follow button  
   - Personalized feed based on followed creators and trending designs  
   - Follower/following counters  
