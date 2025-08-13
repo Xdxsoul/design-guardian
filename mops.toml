@@ -1,3 +1,4 @@
 [dependencies]
 base = "0.14.9"
 map = "9.0.1"
+icrc7-mo = "0.5.0"
