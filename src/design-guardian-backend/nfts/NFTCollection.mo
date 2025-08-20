@@ -15,11 +15,11 @@ import ClassPlus "mo:class-plus";
 import DefaultConfig "defaultConfig";
 
 // --- Actor Definition ---
-shared (init_msg) persistent actor class NftCanister() : async (ICRC7.Service.Service) = this {
+shared ({caller = DEPLOYER}) persistent actor class NftCanister({minter: Principal}) : async (ICRC7.Service.Service) = this {
 
   // --- Initialization ---
   transient let initManager = ClassPlus.ClassPlusInitializationManager(
-    init_msg.caller,
+    minter,
     Principal.fromActor(this),
     true,
   );
@@ -39,7 +39,7 @@ shared (init_msg) persistent actor class NftCanister() : async (ICRC7.Service.Se
   transient let icrc7 = ICRC7.Init<system>({
     manager = initManager;
     initialState = icrc7_migration_state;
-    args = DefaultConfig.defaultConfig(init_msg.caller);
+    args = DefaultConfig.defaultConfig(minter);
     pullEnvironment = ?get_icrc7_environment;
     onInitialize = null;
     onStorageChange = func(new_state : ICRC7.State) {
@@ -143,7 +143,7 @@ shared (init_msg) persistent actor class NftCanister() : async (ICRC7.Service.Se
 
   public query func icrc10_supported_standards() : async ICRC7.SupportedStandards {
     [
-      { name = "ICRC-7"; url = "https://github.com/dfinity/ICRC/ICRCs/ICRC-7" },
+      { name = "ICRC-7"; url = "https://github.com/dfinity/ICRC/tree/main/ICRCs/ICRC-7" },
       {
         name = "ICRC-10";
         url = "https://github.com/dfinity/ICRC/ICRCs/ICRC-10";
@@ -179,15 +179,20 @@ shared (init_msg) persistent actor class NftCanister() : async (ICRC7.Service.Se
 
   var nextTokenId = 0;
 
-  public shared (msg) func mint(to : ICRC7.Account) : async [ICRC7.SetNFTResult] {
+  public func getMinter(): async Principal {
+    icrc7().get_state().owner
+  };
+
+  public shared (msg) func mint(to : ICRC7.Account, metadata: ICRC7.NFTInput) : async [ICRC7.SetNFTResult] {
     let setNftRequest : ICRC7.SetNFTItemRequest = {
       token_id = nextTokenId;
-      metadata = #Map([("tokenUri", #Text(DefaultConfig.tokenURI))]);
+      metadata;
       owner = ?to;
       override = false;
       memo = null;
       created_at_time = null;
     };
+    D.print(debug_show(msg));
 
     switch (icrc7().set_nfts<system>(msg.caller, [setNftRequest], true)) {
       case (#ok(val)) {

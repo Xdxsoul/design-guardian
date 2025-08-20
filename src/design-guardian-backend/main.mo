@@ -8,7 +8,9 @@ import Utils "./utils";
 import { print } "mo:base/Debug";
 import Array "mo:base/Array";
 import Iter "mo:base/Iter";
-persistent actor {
+import ICRC7 "mo:icrc7-mo";
+import { now } "mo:base/Time";
+shared ({caller}) persistent actor class () = {
 
   type User = Types.User;
   type Design = Types.Design;
@@ -18,6 +20,7 @@ persistent actor {
   let users = Map.new<Principal, User>();
   let designs = Map.new<DesignId, Design>();
   let trashDesigns = Map.new<DesignId, Design>();
+  let admin = caller;
 
   var lastDesignID = 0;
 
@@ -394,7 +397,7 @@ persistent actor {
     };
   };
 
-  func userCanComment(u : Principal, design : Design) : Bool {
+  func userCanComment(_u : Principal, design : Design) : Bool {
     return true // TODO To implement permission policies
   };
 
@@ -507,6 +510,50 @@ persistent actor {
         return #ok(comments)
       };
     };
+  };
+
+  //--------------- NFT Collection support -----------------------
+  type Account = {
+    owner: Principal;
+    subaccount: ?Blob
+  };
+
+  type MintRequestArgs = {
+
+  };
+
+  var collectionCID: Principal = Principal.fromText("aaaaa-aa");
+
+  public shared ({ caller }) func setCollectionCanisterId(cid: Principal): async {#Ok} {
+    assert (caller == admin);
+    collectionCID := cid;
+    #Ok
+  };
+
+  func canMint(caller: Principal, _args: MintRequestArgs): Bool {
+    let user = Map.get<Principal, User>(users, Map.phash, caller);
+    switch user {
+      case null { return false };
+      case ( ?user ) {
+        //TODO verificar 
+        return true
+      }
+    }
+    
+  };
+
+  public shared ({ caller }) func mintRequest(mintArgs: MintRequestArgs): async [ICRC7.SetNFTResult]{
+    let collection = actor(Principal.toText(collectionCID)): actor {
+      mint: shared (Account, ICRC7.NFTInput) -> async [ICRC7.SetNFTResult];
+    };
+    let account = {owner = caller; subaccount = null};
+    let metadata : ICRC7.NFTInput = #Map([("icrc-7-Logo", #Int(now()))]);
+
+    if(canMint(caller, mintArgs)) {
+      await collection.mint(account, metadata)
+    } else {
+      []
+    }
   };
 
 };
