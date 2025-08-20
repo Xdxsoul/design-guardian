@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {blobToImageUrl } from '../utils/imageManager'
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,7 +43,7 @@ export const Gallery = ({ user }: GalleryProps) => {
       setPatterns(await backend.feed())
     }
     fetchPatterns()
-    console.log(patterns)
+    console.log({patterns: patterns})
   
   }, [backend]);
 
@@ -174,8 +175,8 @@ export const Gallery = ({ user }: GalleryProps) => {
                 <CardContent>
                   
                   <div className="mb-3 overflow-hidden rounded-lg">
-                    <img
-                      src={String.fromCharCode(... pattern.coverImage.data)}
+                    <img 
+                      src={blobToImageUrl(pattern.coverImage.data)}
                       alt={pattern.name}
                       className="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300"
                     />

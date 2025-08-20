@@ -23,8 +23,6 @@ const Index = () => {
     setCurrentPage('dashboard');
   };
 
-  console.log(import.meta.env.VITE_CANISTER_ID)
-
 
   const handleLogout = () => {
     updateUser(null);

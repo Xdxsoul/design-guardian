@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Palette, Plus, Eye, Edit, Trash2, Image } from 'lucide-react';
 import { User, DesignPreview } from "../declarations/main/main.did"
 import { useSession } from "../context/sessionContext"
+import {blobToImageUrl } from '../utils/imageManager'
 
 // interface Pattern {
 //   id: string;
@@ -194,7 +195,8 @@ export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
                     {pattern.coverImage && (
                       <div className="mb-3">
                         <img
-                          src={String.fromCharCode(... pattern.coverImage.data)}
+                          src={blobToImageUrl(pattern.coverImage.data)}
+                          // src={String.fromCharCode(... pattern.coverImage.data)}
                           alt={pattern.name}
                           className="w-full h-32 object-cover rounded border"
                         />
