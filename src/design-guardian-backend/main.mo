@@ -519,7 +519,14 @@ shared ({caller}) persistent actor class () = {
   };
 
   type MintRequestArgs = {
-
+    desingId: Nat;
+    // symbol: Text;
+    // name: Text;
+    // description: Text;
+    // logo: Text;
+    // total_supply: Nat;
+    // supply_cap: Nat;
+    metadata: ICRC7.NFTInput
   };
 
   var collectionCID: Principal = Principal.fromText("aaaaa-aa");
@@ -530,7 +537,7 @@ shared ({caller}) persistent actor class () = {
     #Ok
   };
 
-  func canMint(caller: Principal, _args: MintRequestArgs): Bool {
+  func canMint(caller: Principal): Bool {
     let user = Map.get<Principal, User>(users, Map.phash, caller);
     switch user {
       case null { return false };
@@ -542,18 +549,32 @@ shared ({caller}) persistent actor class () = {
     
   };
 
-  public shared ({ caller }) func mintRequest(mintArgs: MintRequestArgs): async [ICRC7.SetNFTResult]{
+  type MintResponse = {
+    #Ok: [ICRC7.SetNFTResult];
+    #Err: Text;
+  };
+
+  public shared ({ caller }) func mintRequest(mintArgs: MintRequestArgs): async MintResponse {
     let collection = actor(Principal.toText(collectionCID)): actor {
       mint: shared (Account, ICRC7.NFTInput) -> async [ICRC7.SetNFTResult];
     };
-    let account = {owner = caller; subaccount = null};
-    let metadata : ICRC7.NFTInput = #Map([("icrc-7-Logo", #Int(now()))]);
 
-    if(canMint(caller, mintArgs)) {
-      await collection.mint(account, metadata)
-    } else {
-      []
-    }
+    let design = Map.get<DesignId, Design>(designs, Map.nhash, mintArgs.desingId);
+    switch design {
+      case null { return #Err("Design not found") };
+      case (?design) {
+        if(design.creator != caller) {
+          return #Err("Caller is not onwer design");
+        } else {
+          let account = {owner = caller; subaccount = null};
+          if(canMint(caller)) {
+            return #Ok(await collection.mint(account, mintArgs.metadata))
+          } else {
+            return #Err("")
+          }
+        }
+      }
+    };
   };
 
 };
