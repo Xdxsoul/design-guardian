@@ -98,9 +98,8 @@ const Header = () => {
   return (
     <>
       <header className="w-full flex justify-between items-center p-1 bg-gradient-to-t from-[#00000000] to-blue-800 pb-4 text-white select-none h-[60px]">
-        <div className='flex items-center'>
-
-        <img src={logo} alt="" className='w-[250px] ml-[15px] mt-[350px] hover:scale-110 transition-transform duration-300' />
+        <div className='flex items-center z-10'>
+          <img src={logo} alt="" className='w-[250px]  ml-[15px] mt-[350px] hover:scale-110 transition-transform duration-300 bg-[#33113344] rounded-full' />
         </div>
 
 
