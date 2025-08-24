@@ -19,13 +19,13 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { useSession  } from '../context/sessionContext';
+import FileUploadButton from './FileUploadButton';
 import {blobToImageUrl } from '../utils/imageManager'
-import { File } from '../declarations/main/main.did'
+import { File as FileDesign} from '../declarations/main/main.did'
 
-interface SavePatternDialogProps {
+interface ImportPatternDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  canvasData: Uint8Array;
 }
 
 const getKind = (designType: string) => {
@@ -38,12 +38,13 @@ const getKind = (designType: string) => {
   }
 };
 
-export const SavePatternDialog = ({ open, onOpenChange, canvasData }: SavePatternDialogProps) => {
+export const ImportPatternDialog = ({ open, onOpenChange }: ImportPatternDialogProps) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [designType, setDesignType] = useState('');
   const [visible3DRendering, setVisible3DRendering] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [file, setFile] = useState<File | null>(null)
 
   const { backend } = useSession();
 
@@ -54,31 +55,40 @@ export const SavePatternDialog = ({ open, onOpenChange, canvasData }: SavePatter
     { value: 'textile-printing', label: 'Textile Printing' },
   ];
 
+  async function fileConversion(file: File): Promise<FileDesign> {
+    console.log(file)
+    console.log(file.name)
+    if (!file.name.endsWith(".glb")) {
+      throw new Error("The file is not a valid GLB");
+    }
+    const arrayBuffer = await file.arrayBuffer();
+    const name = file.name;
+    const mimeType = 'data:image/glb;base64';
+    return {data: new Uint8Array(arrayBuffer), name, mimeType};
+  }
+
   const handleSave = async () => {
     if (!name.trim()) {
       toast.error('Please enter a pattern name');
       return;
     }
-
     if (!designType) {
       toast.error('Please select a design type');
       return;
     }
-
     setIsLoading(true);
-
     try {
-      // Simulate saving the pattern
+      const fileConverted = await fileConversion(file)
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
       const pattern = {
         name: name.trim(),
         description: description.trim(),
         kind: getKind(designType),
         visible3DRendering,
-        sourceFiles: [],
-        coverImage: {data: canvasData , name: name.trim() + "_coverImage", mimeType: 'data:image/png;base64,'}, 
+        sourceFiles: [fileConverted] as FileDesign[],
+        coverImage: {data: [] , name: "", mimeType: ''} as FileDesign,
       };
+      
 
       const response = await backend.createDesign(pattern)
       if("Ok" in response) {
@@ -101,13 +111,17 @@ export const SavePatternDialog = ({ open, onOpenChange, canvasData }: SavePatter
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2">
-            <span className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-              Save Pattern
-            </span>
+        <DialogHeader className='flex-row items-center items-baseline justify-evenly'>
+          <DialogTitle className="flex items-center space-x-2 mb-4">
+            <div className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+              Import Pattern
+            </div>
           </DialogTitle>
+
+          <FileUploadButton onFileSelect = {setFile}/>
         </DialogHeader>
+
+
 
         <div className="space-y-4 py-4">
           {/* Pattern Name */}
@@ -162,19 +176,6 @@ export const SavePatternDialog = ({ open, onOpenChange, canvasData }: SavePatter
             </Label>
           </div>
 
-          {/* Preview */}
-          {canvasData && (
-            <div className="space-y-2">
-              <Label>Preview</Label>
-              <div className="border rounded-lg p-2 bg-muted">
-                <img
-                  src={blobToImageUrl(canvasData)}
-                  alt="Pattern preview"
-                  className="w-full h-32 object-cover rounded"
-                />
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="flex justify-end space-x-2">

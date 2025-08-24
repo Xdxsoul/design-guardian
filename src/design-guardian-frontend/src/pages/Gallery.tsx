@@ -1,31 +1,46 @@
+import { Button } from '@/components/ui/button';
 import Gallery3D from '../components/Gallery3D.tsx';
+import { useEffect, useState } from 'react';
 
 import { User, DesignPreview } from "../declarations/main/main.did"
-// import { useSession } from "../context/sessionContext"
+import { ArrowLeft } from 'lucide-react';
+import { useSession } from "../context/sessionContext"
 
 interface GalleryProps {
   user: User | null;
+  onNavigate: (page: string) => void;
+
 }
 
-export const Gallery = ({ user }: GalleryProps) => {
-  
-  //TODO Traerse del backend los archivos glb hacia este componente o hacia Galery3d
+export const Gallery = ({  onNavigate }: GalleryProps) => {
+
+  const { user, backend } = useSession()
+  const [patters, setPatterns] = useState<DesignPreview[]>([])
+
+  useEffect(() => {
+    const fetchPatterns = async () => {
+      const response = await backend.feed();
+      setPatterns(response.filter(x => x.visible3DRendering))
+    };
+    fetchPatterns()
+  }, [backend])
+
   return (
     <>
     <div className=" bg-gradient-to-br from-background via-accent/20 to-primary-glow/10 p-4 mb-">
       <div className="max-w-7xl mx-auto pt-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Public Gallery
-          </h1>
-          <p className="text-muted-foreground">
-            Discover amazing textile patterns from the Design Guardian community
-          </p>
+          {user && <Button
+            variant="outline"
+            onClick={() => onNavigate('dashboard')}
+          >
+            Dashboard
+          </Button>}
         </div>    
       </div>
     </div>
-      <Gallery3D patterns={[]}/>
+      <Gallery3D patterns={patters}/>
     </>
   );
 };

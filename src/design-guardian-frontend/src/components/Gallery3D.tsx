@@ -2,17 +2,16 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { FirstPersonControls, Environment } from '@react-three/drei';
 import { PlaneGeometry, MeshLambertMaterial, TextureLoader } from 'three';
-import  {Garment} from './Garment'
+import { DesignPreview } from "../declarations/main/main.did";
+import { Garment } from './Garment';
 import * as THREE from 'three';
-
+import { useSession } from "../context/sessionContext";
 
 // Componente para una isla individual
-
 const ISLAND_SIZE = 5;
 const ISLAND_HEIGHT = 0.12;
 const SPACING = ISLAND_SIZE + 3;
 const CIELINGHEIGHT = 3.5;
-
 
 const Island = ({ position }: { position: [number, number, number] }) => {
   return (
@@ -22,9 +21,9 @@ const Island = ({ position }: { position: [number, number, number] }) => {
         <meshLambertMaterial color="#681d6e" />
       </mesh>
       {/* Zocalo luminoso */}
-      <mesh position={[position[0], position[1] - ISLAND_HEIGHT /2 - 0.025, position[2]]}>
+      <mesh position={[position[0], position[1] - ISLAND_HEIGHT / 2 - 0.025, position[2]]}>
         <boxGeometry args={[ISLAND_SIZE, 0.05, ISLAND_SIZE]} />
-        <meshBasicMaterial color="#e9e8c3"/>
+        <meshBasicMaterial color="#e9e8c3" />
       </mesh>
     </>
   );
@@ -41,16 +40,15 @@ const Floor = () => {
 };
 
 const Wall = ({ position, rotation, texturePath, color }: { position: [number, number, number]; rotation: [number, number, number]; texturePath: string; color: string }) => {
-  const texture = new TextureLoader().load(texturePath);
-  const material = new MeshLambertMaterial({ map: texture, transparent: true }); // transparent: true por si la textura tiene áreas transparentes
-  const sizeX = 50; // Ancho de la pared
+  const texture = texturePath ? new TextureLoader().load(texturePath) : null;
+  const material = texture ? new MeshLambertMaterial({ map: texture, transparent: true }) : new MeshLambertMaterial({ color });
+  const sizeX = 50;
   const sizeY = CIELINGHEIGHT + 0.1;
 
   return (
     <mesh position={position} rotation={rotation}>
       <planeGeometry args={[sizeX, sizeY]} />
       <meshLambertMaterial color={color} side={THREE.DoubleSide} />
-      {/* <meshLambertMaterial map={texture} transparent={true} side={THREE.DoubleSide} />  */}
     </mesh>
   );
 };
@@ -69,12 +67,12 @@ const Ceiling = () => {
       {Array.from({ length: SPACING }, (_, i) => (
         <group key={i}>
           {/* Franjas horizontales */}
-          <mesh position={[0.5, CIELINGHEIGHT - 0.05, (i - 2) * SPACING - 3.5 ]} rotation={[Math.PI / 2, 0, 0]}>
+          <mesh position={[0.5, CIELINGHEIGHT - 0.05, (i - 2) * SPACING - 3.5]} rotation={[Math.PI / 2, 0, 0]}>
             <planeGeometry args={[40, 0.5]} />
             <meshBasicMaterial color="#ffffff" />
           </mesh>
           {/* Franjas verticales */}
-          <mesh position={[(i - 2) * SPACING - 3.5, CIELINGHEIGHT - 0.05 , 0.5]} rotation={[Math.PI / 2, 0, Math.PI / 2]}>
+          <mesh position={[(i - 2) * SPACING - 3.5, CIELINGHEIGHT - 0.05, 0.5]} rotation={[Math.PI / 2, 0, Math.PI / 2]}>
             <planeGeometry args={[40.5, 0.5]} />
             <meshBasicMaterial color="#ffffff" />
           </mesh>
@@ -118,19 +116,24 @@ const Lighting = () => {
 };
 
 // Componente principal de la galería
-const Gallery3DScene = () => {
-  // Solución para el error de 'controlsRef.current'
-  const controlsRef = useRef<any>(null);
+interface Gallery3DSceneProps {
+  patterns: string[] | DesignPreview[];
+}
 
+const Gallery3DScene: React.FC<Gallery3DSceneProps> = ({ patterns }) => {
+  const controlsRef = useRef<any>(null);
   const [lookSpeed, setLookSpeed] = useState(0);
+  const keyboard = useRef<Record<string, boolean>>({});
+  const { backend } = useSession();
+  const [designsUrl, setDesignsUrl] = useState<string[]>([]);
 
   // Manejador para el movimiento y la rotación del mouse
   useEffect(() => {
     const handlePointerEnter = () => {
-      setLookSpeed(0.02); // Activa la rotación cuando el mouse entra
+      setLookSpeed(0.02);
     };
     const handlePointerLeave = () => {
-      setLookSpeed(0); // Desactiva la rotación cuando el mouse sale
+      setLookSpeed(0);
     };
 
     const canvas = document.querySelector('canvas');
@@ -147,15 +150,12 @@ const Gallery3DScene = () => {
     };
   }, []);
 
-
-  const keyboard = useRef<Record<string, boolean>>({});
-
   // Manejar el estado de las teclas presionadas
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       keyboard.current[e.key.toLowerCase()] = true;
     };
-    const handleKeyUp = (e) => {
+    const handleKeyUp = (e: KeyboardEvent) => {
       keyboard.current[e.key.toLowerCase()] = false;
     };
 
@@ -170,7 +170,6 @@ const Gallery3DScene = () => {
 
   // Bucle de renderizado para actualizar la rotación
   useFrame(() => {
-    // Si la referencia existe, ejecuta el código
     if (controlsRef.current) {
       if (keyboard.current.q) {
         controlsRef.current.object.rotation.y += 0.03;
@@ -181,11 +180,55 @@ const Gallery3DScene = () => {
     }
   });
 
+  //--------------- Models ----------------
+  useEffect(() => {
+    console.log(patterns)
+    const fetchRenderings = async () => {
+      const newDesignsUrl: string[] = [];
+      
+      for (const pattern of patterns) {
+        
+        if (typeof pattern !== 'string' && 'id' in pattern) {
+          try {
+            const response = await backend.getRenderFile(pattern.id);
+            if (response && response.length > 0) {
+              
+              const item = response[0];
+              if (item instanceof Uint8Array) {
+                let bufferToUse: ArrayBuffer;
+                
+                if (item) {
+                  console.log(item[2])
+                  bufferToUse = new ArrayBuffer(item.byteLength) ;
+                  new Uint8Array(bufferToUse).set(new Uint8Array(item.buffer, item.byteOffset, item.byteLength));
+                } else {
+                  bufferToUse = item.buffer.slice(item.byteOffset, item.byteOffset + item.byteLength) as ArrayBuffer;
+                }
+                
+                const glbBlob = new Blob([bufferToUse], { type: 'model/gltf-binary' });
+                const url = URL.createObjectURL(glbBlob);
+                newDesignsUrl.push(url);
+              }
+            }
+          } catch (error) {
+            console.error('Error fetching rendering:', error);
+          }
+        }
+      }
+      
+      setDesignsUrl(newDesignsUrl);
+    };
+
+    if (patterns.length > 0) {
+      fetchRenderings();
+    }
+  }, [backend, patterns]);
+
   const islandPositions: [number, number, number][] = [];
   
   for (let x = -15; x <= 15; x += SPACING) {
     for (let z = -15; z <= 15; z += SPACING) {
-      islandPositions.push([x, ISLAND_HEIGHT / 2 , z]);
+      islandPositions.push([x, ISLAND_HEIGHT / 2, z]);
     }
   }
 
@@ -202,40 +245,30 @@ const Gallery3DScene = () => {
         heightMin={0.5}
         heightMax={2.5}
       />
-      {/* Pared del fondo (Z negativa) */}
-      <Wall
-        position={[0, CIELINGHEIGHT / 2, -25]}
-        rotation={[0, 0, 0]}
-        texturePath = ""
-        color = "#000"
-      />
-      {/* Pared del frente (Z positiva) */}
-      <Wall
-        position={[0, CIELINGHEIGHT / 2, 25]}
-        rotation={[0, Math.PI, 0]} // Rotada 180 grados para que el lado visible mire hacia el interior
-        texturePath = "/textures/brick_diffuse.jpg"
-        color = "#000"
-      />
-      {/* Pared de la izquierda (X negativa) */}
-      <Wall
-        position={[-25, CIELINGHEIGHT / 2, 0]}
-        rotation={[0, Math.PI / 2, 0]} // Rotada 90 grados
-        texturePath = ""
-        color = "#000"
-      />
-      {/* Pared de la derecha (X positiva) */}
-      <Wall
-        position={[25, CIELINGHEIGHT / 2, 0]}
-        rotation={[0, -Math.PI / 2, 0]} // Rotada -90 grados
-        texturePath = ""
-        color = "#000"
-      />
+      
+      {/* Paredes */}
+      <Wall position={[0, CIELINGHEIGHT / 2, -25]} rotation={[0, 0, 0]} texturePath="" color="#000" />
+      <Wall position={[0, CIELINGHEIGHT / 2, 25]} rotation={[0, Math.PI, 0]} texturePath="" color="#000" />
+      <Wall position={[-25, CIELINGHEIGHT / 2, 0]} rotation={[0, Math.PI / 2, 0]} texturePath="" color="#000" />
+      <Wall position={[25, CIELINGHEIGHT / 2, 0]} rotation={[0, -Math.PI / 2, 0]} texturePath="" color="#000" />
 
-      <Garment position={[islandPositions[2][2] -1.5 , islandPositions[1][1] + 0.5 , islandPositions[2][2] +2 ]  } modelPath = '/designHardcoded/dress_plain2.glb'/>
-      <Garment position={[islandPositions[2][2] , islandPositions[1][1] , islandPositions[2][2] +2 ] } modelPath = './designHardcoded/long_evening_dress.glb'/>
+      {/* Garments hardcodeados */}
       
+      <Garment position={[islandPositions[2][0] - 1.5, islandPositions[1][1] + 0.5, islandPositions[2][2] + 2]} modelPath='/designHardcoded/dress_plain2.glb'/>
+      <Garment position={[islandPositions[2][0], islandPositions[1][1], islandPositions[2][2] + 2]} modelPath='./designHardcoded/long_evening_dress.glb'/>
       
-      
+      {/* Renderizar garments desde designsUrl */}
+      {designsUrl.map((url, index) => (
+        <Garment 
+          key={index}
+          position={[
+            islandPositions[index * 2 % islandPositions.length][0],
+            islandPositions[index * 2 % islandPositions.length][1] + 0.3,
+            islandPositions[index * 2  % islandPositions.length][2]
+          ]}
+          modelPath={url}
+        />
+      ))}
       
       <Lighting />
       <Floor />
@@ -249,16 +282,15 @@ const Gallery3DScene = () => {
       <Environment preset="warehouse" />
     </>
   );
-
 };
 
 // Componente wrapper exportable
 interface Gallery3DProps {
   className?: string;
-   patterns: string[];
+  patterns: string[] | DesignPreview[];
 }
 
-const Gallery3D: React.FC<Gallery3DProps> = ({ className = "", patterns}) => {
+const Gallery3D: React.FC<Gallery3DProps> = ({ className = "", patterns }) => {
   return (
     <div className={`w-full h-screen ${className}`}>
       <Canvas
@@ -271,9 +303,8 @@ const Gallery3D: React.FC<Gallery3DProps> = ({ className = "", patterns}) => {
         shadows
         style={{ background: '#f5f5f5' }}
       >
-        <Gallery3DScene />
+        <Gallery3DScene patterns={patterns} />
       </Canvas>
-      
     </div>
   );
 };

@@ -12,11 +12,11 @@ interface DesignStudioProps {
 
 export const DesignStudio = ({ onNavigate }: DesignStudioProps) => {
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
-  const [currentCanvasData, setCurrentCanvasData] = useState('');
+  const [currentCanvasData, setCurrentCanvasData] = useState<Uint8Array>();
 
   const { backend } = useSession();
 
-  const handleSavePattern = (canvasData: string) => {
+  const handleSavePattern = (canvasData: Uint8Array) => {
     setCurrentCanvasData(canvasData);
     setSaveDialogOpen(true);
   };

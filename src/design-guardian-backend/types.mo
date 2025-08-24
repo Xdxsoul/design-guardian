@@ -92,6 +92,7 @@ module {
         creator: Principal;
         creatorName: Text;
         coverImage: File;
+        visible3DRendering: Bool;
         dateCreation: Int;
         kind: KindDesign;
         likesCount: Nat;

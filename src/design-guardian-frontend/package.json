@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "deploy": "dfx deploy main & ./prefixer-env.sh",
+    "deployFront": "vite build & dfx deploy frontend",
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",

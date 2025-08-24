@@ -68,7 +68,7 @@ shared ({caller}) persistent actor class () = {
     };
   };
 
-  public shared ({ caller }) func logIn() : async ?User {
+  public shared query({ caller }) func logIn() : async ?User {
     let response = Map.get<Principal, User>(users, Map.phash, caller);
     response;
   };
@@ -188,13 +188,27 @@ shared ({caller}) persistent actor class () = {
     switch design {
       case (null) { return null };
       case (?design) {
-        if (caller == design.creator) {
+        if (caller == design.creator or caller == admin) {
           return (?design);
         } else {
           return null;
         };
       };
     };
+  };
+
+  public query func getRenderFile(designId: Nat): async ?Blob {
+    let design = Map.get<DesignId, Design>(designs, Map.nhash, designId);
+    switch design {
+      case null null;
+      case ( ?design ) {
+        if (design.visible3DRendering and design.sourceFiles.size() > 0) {
+          ?design.sourceFiles[0].data
+        } else {
+          null
+        }
+      }
+    }
   };
 
   public query func feed() : async [Types.DesignPreview] {
@@ -349,6 +363,10 @@ shared ({caller}) persistent actor class () = {
     };
   };
 
+  // public shared ({ caller }) func importDesign(DesignDataInit): async (){
+    
+  // };
+//----------------- Users Interactions whit designs -------------------------
   func hasUserLikedThis(user : Principal, likes : [Principal]) : Bool {
     for (l in likes.vals()) {
       if (l == user) { return true };

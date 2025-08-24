@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { ShoeIcon, DressIcon, HatIcon } from '../components/Icons';
+import { ImportPatternDialog } from "@/components/ImportPaternDialog"
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Palette, Plus, Eye, Edit, Trash2, Image } from 'lucide-react';
-import { User, DesignPreview } from "../declarations/main/main.did"
+import { Palette, Plus, Eye, Edit, Trash2, Image, Upload, Save } from 'lucide-react';
+import { User, DesignPreview, DesignDataInit, KindDesign } from "../declarations/main/main.did"
 import { useSession } from "../context/sessionContext"
 import {blobToImageUrl } from '../utils/imageManager'
 
@@ -24,7 +26,9 @@ interface DashboardProps {
 
 export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
   const [patterns, setPatterns] = useState<DesignPreview[]>([]);
+  const [file, setFile] = useState<Uint8Array | null>(null)
   const { backend } = useSession()
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchFeed = async () => {
@@ -38,6 +42,16 @@ export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
     fetchFeed();
   }, [backend]);
 
+  const handleImportFile = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const arrayBuffer = event.target?.result as ArrayBuffer;
+      const uint8Array = new Uint8Array(arrayBuffer);
+      setFile(uint8Array);
+    };
+    const fileBlob = reader.readAsArrayBuffer(file);
+  }
+
   const getDesignTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
       'footwear': 'Footwear',
@@ -47,6 +61,7 @@ export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
     };
     return labels[type] || type;
   };
+
 
   const getDesignTypeColor = (type: string) => {
     const colors: Record<string, string> = {
@@ -62,6 +77,24 @@ export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
     console.log("Delete is not implemented yet")
   };
 
+  function getPatternKindIcon(kind: KindDesign): import("react").ReactNode {
+    // KindDesign is likely a variant type, e.g. { footwear: null } | { clothing: null } | ...
+    if ("Footwear" in kind) {
+      return <ShoeIcon className="w-full h-[200px] text-blue-400" />;
+    }
+    if ("Clothing" in kind) {
+      return <DressIcon className="w-full h-[200px] text-green-400" />;
+    }
+    if ("Accessories" in kind) {
+      return <HatIcon className="w-full h-[200px] text-purple-400" />;
+    }
+    if ("TextilePrinting" in kind || "textile-printing" in kind) {
+      // handle both snake_case and kebab-case
+      return <Palette className="w-full h-[200px] text-orange-400" />;
+    }
+    // fallback
+    return <Palette className="w-full h-[200px] text-gray-400" />;
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-accent/20 to-primary-glow/10 p-4">
       <div className="max-w-7xl mx-auto pt-8">
@@ -145,6 +178,18 @@ export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
               <Edit className="h-4 w-4 mr-2" />
               Edit Profile
             </Button>
+
+            <Button variant="outline" size="sm" onClick={() => setImportDialogOpen(true)}>
+              <Upload className="h-4 w-4 mr-2" />
+              Import Pattern
+            </Button>
+
+            <ImportPatternDialog
+              open={importDialogOpen}
+              onOpenChange={setImportDialogOpen}
+            />
+
+
           </div>
         </div>
 
@@ -194,12 +239,16 @@ export const Dashboard = ({ user, onNavigate }: DashboardProps) => {
                   <CardContent>
                     {pattern.coverImage && (
                       <div className="mb-3">
-                        <img
-                          src={blobToImageUrl(pattern.coverImage.data)}
-                          // src={String.fromCharCode(... pattern.coverImage.data)}
-                          alt={pattern.name}
-                          className="w-full h-32 object-cover rounded border"
+                        {pattern.coverImage?.data[0] ? (
+                        <img 
+                          src={blobToImageUrl(pattern.coverImage.data)} 
+                          alt="Pattern cover"
+                          className="w-full h-full object-cover rounded"
                         />
+                      ) : (
+                        getPatternKindIcon(pattern.kind)
+                        // <ShoeIcon className="w-full h-[200px] text-gray-400" />
+                      )}
                       </div>
                     )}
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
