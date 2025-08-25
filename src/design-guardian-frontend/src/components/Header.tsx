@@ -97,10 +97,9 @@ const Header = () => {
 
   return (
     <>
-      <header className="w-full flex justify-between items-center p-1 bg-gradient-to-t from-[#00000000] to-blue-800 pb-4 text-white select-none h-[60px]">
-        <div className='flex items-center'>
-
-        <img src={logo} alt="" className='w-[250px] ml-[15px] mt-[350px] hover:scale-110 transition-transform duration-300' />
+      <header className="w-full flex justify-between items-center p-1 bg-gradient-to-t from-[#00000000] to-blue-800 pb-4 text-white select-none h-[65px]">
+        <div className='flex items-center z-10'>
+          <img src={logo} alt="" className='w-[250px]  ml-[15px] mt-[350px] hover:scale-110 transition-transform duration-300 bg-[#33113344] rounded-full' />
         </div>
 
 
@@ -108,8 +107,9 @@ const Header = () => {
         <div className="absolute left-1/2 transform -translate-x-1/2 text-center">
           <h1
             onClick={() => navigate("./")}
-            className="hidden sm:block text-[34px] font-bold cursor-pointer hover:scale-110 transition-transform duration-300"
-          >
+            className="hidden sm:block text-[40px] font-bold text-[#ffccff] font-['EFCO Brookshire']
+              cursor-pointer hover:scale-110 transition-transform duration-300"
+            >
             Design Guardian
           </h1>
           <HomeIcon

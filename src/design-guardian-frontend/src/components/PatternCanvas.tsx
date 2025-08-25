@@ -2,9 +2,10 @@ import { useRef, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Palette, Square, Circle, Triangle, Brush, Eraser, RotateCcw, Save, Minus, Grid, Ruler } from 'lucide-react';
+import {compressAndConvertImage } from '../utils/imageManager'
 
 interface PatternCanvasProps {
-  onSave: (canvasData: string) => void;
+  onSave: (canvasData: Uint8Array) => void;
 }
 
 export const PatternCanvas = ({ onSave }: PatternCanvasProps) => {
@@ -253,13 +254,23 @@ export const PatternCanvas = ({ onSave }: PatternCanvasProps) => {
     drawRuler(ctx, canvas.width, canvas.height);
   };
 
-  const savePattern = () => {
+  // const savePattern = () => {
+  //   const canvas = canvasRef.current;
+  //   if (!canvas) return;
+
+  //   const dataURL = canvas.toDataURL('image/png');
+  //   onSave(dataURL);
+  // };
+  const savePattern = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
-    const dataURL = canvas.toDataURL('image/png');
-    onSave(dataURL);
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+      const compressed = await compressAndConvertImage(blob, 50, 300, 300); // Ej: max 50KB
+      onSave(compressed);
+    }, "image/jpeg");
   };
+
 
   return (
     <div className="flex flex-col space-y-4">

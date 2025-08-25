@@ -23,8 +23,6 @@ const Index = () => {
     setCurrentPage('dashboard');
   };
 
-  console.log(import.meta.env.VITE_CANISTER_ID)
-
 
   const handleLogout = () => {
     updateUser(null);
@@ -42,9 +40,9 @@ const Index = () => {
       case 'design':
         return user ? <DesignStudio onNavigate={setCurrentPage} /> : null;
       case 'gallery':
-        return <Gallery user={user} />;
+        return <Gallery user={user}  onNavigate={setCurrentPage}/>;
       default:
-        return user ? <Dashboard user={user} onNavigate={setCurrentPage} /> : <Gallery user={user} />;
+        return user ? <Dashboard user={user} onNavigate={setCurrentPage} /> : <Gallery user={user} onNavigate={setCurrentPage}/>;
     }
   };
 

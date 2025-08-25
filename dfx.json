@@ -5,11 +5,22 @@
       "type": "motoko",
       "declarations": {
         "output": "./src/design-guardian-frontend/src/declarations/main"
-      }
+      },
+      "specified_id": "ikfnm-kiaaa-aaaab-qb4ua-cai"
     },
     "frontend": {
       "source": ["src/design-guardian-frontend/dist"],
-      "type": "assets"
+      "type": "assets",
+      "specified_id": "inely-hqaaa-aaaab-qb4uq-cai"
+    },
+    "NFTCollection": {
+      "type": "motoko",
+      "main": "src/design-guardian-backend/nfts/NFTCollection.mo",
+      "specified_id": "ixcfx-cyaaa-aaaag-qnioa-cai",
+      "declarations": {
+        "output": "./src/design-guardian-frontend/src/declarations/icrc7"
+      },
+      "init_arg": "(record { minter = principal \"ikfnm-kiaaa-aaaab-qb4ua-cai\"} )"
     },
     "internet_identity": {
       "type": "pull",

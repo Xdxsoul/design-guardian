@@ -7,7 +7,7 @@ import ModalProviderSelect from '../components/auth/ModalProviderSelect';
 
 
 const canisterId = import.meta.env.VITE_CANISTER_ID_MAIN as string
-console.log(canisterId)
+console.log({canisteridMain: canisterId})
 
 const host = import.meta.env.VITE_DFX_NETWORK === "local" ? "http://localhost:4943/?canisterId=rdmx6-jaaaa-aaaaa-aaadq-cai" : "https://identity.ic0.app";
 const providerUrl = import.meta.env.VITE_DFX_NETWORK === "local" ? "http://rdmx6-jaaaa-aaaaa-aaadq-cai.localhost:4943" : "https://identity.ic0.app";
@@ -60,7 +60,7 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
 
   useEffect(() => {
     const setupAgent = async () => {
-      console.log("Principal actual:", identity.getPrincipal().toText());
+      // console.log("Principal actual:", identity.getPrincipal().toText());
       const agent = new HttpAgent({
         identity,
         host,
@@ -117,7 +117,7 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
       identityProvider: providerUrl,
       onSuccess: () => {
         const identity = authClient.getIdentity();
-        console.log("Login success. Principal:", identity.getPrincipal().toText());
+        // console.log("Login success. Principal:", identity.getPrincipal().toText());
         setIdentity(identity);
         setIsAuthenticated(true);
       },

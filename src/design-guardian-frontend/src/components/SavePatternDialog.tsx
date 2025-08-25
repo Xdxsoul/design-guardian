@@ -19,12 +19,13 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { useSession  } from '../context/sessionContext';
+import {blobToImageUrl } from '../utils/imageManager'
 import { File } from '../declarations/main/main.did'
 
 interface SavePatternDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  canvasData: string;
+  canvasData: Uint8Array;
 }
 
 const getKind = (designType: string) => {
@@ -69,22 +70,14 @@ export const SavePatternDialog = ({ open, onOpenChange, canvasData }: SavePatter
     try {
       // Simulate saving the pattern
       await new Promise(resolve => setTimeout(resolve, 1000));
-        // sourceFiles: [File]; 
-        // kind: KindDesign;
-        // name: Text;
-        // description: Text;
-      const canvasDataString: string = canvasData; 
-      const encoder = new TextEncoder();
-      const canvasUint8Array = encoder.encode(canvasDataString);
-
+      
       const pattern = {
         name: name.trim(),
         description: description.trim(),
         kind: getKind(designType),
         visible3DRendering,
         sourceFiles: [],
-        // coverImage: "sfsaf"
-        coverImage: {data: canvasUint8Array , name: name.trim() + "_coverImage", mimeType: 'data:image/png;base64,'}, // Obtener una imagen de muestra
+        coverImage: {data: canvasData , name: name.trim() + "_coverImage", mimeType: 'data:image/png;base64,'}, 
       };
 
       const response = await backend.createDesign(pattern)
@@ -175,7 +168,7 @@ export const SavePatternDialog = ({ open, onOpenChange, canvasData }: SavePatter
               <Label>Preview</Label>
               <div className="border rounded-lg p-2 bg-muted">
                 <img
-                  src={canvasData}
+                  src={blobToImageUrl(canvasData)}
                   alt="Pattern preview"
                   className="w-full h-32 object-cover rounded"
                 />

@@ -56,6 +56,19 @@ module {
         visible3DRendering: Bool;
     };
 
+    public type Comment = {
+        date: Int;
+        author: Principal;
+        content: CommentPayLoad;
+        likes: [Principal];
+        subComments: [Comment]
+    };
+
+    public type CommentPayLoad = {
+        msj: Text;
+        img: ?Blob;
+    };
+
     public type Design = {
         id: DesignId;
         kind: KindDesign;
@@ -65,9 +78,11 @@ module {
         creatorName: Text;
         visible3DRendering: Bool;
         dateCreation: Int;
+        comments: [Comment];
         lastModification: Int;
         sourceFiles: [File];
         coverImage: File;
+        likes: [Principal];
     };
 
     public type DesignPreview = {
@@ -77,8 +92,10 @@ module {
         creator: Principal;
         creatorName: Text;
         coverImage: File;
+        visible3DRendering: Bool;
         dateCreation: Int;
         kind: KindDesign;
+        likesCount: Nat;
     };
 
 

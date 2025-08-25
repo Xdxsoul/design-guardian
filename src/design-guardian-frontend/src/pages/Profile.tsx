@@ -18,7 +18,7 @@ const Profile = ({ profile }: ProfileProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { user } = useSession();
-  console.log(profile.name)
+  console.log({nameProfile: profile.name})
 
   // Helper para formatear la fecha de registro
   const formatRegisterDate = (timestamp: bigint | number): string => {
