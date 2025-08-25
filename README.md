@@ -8,6 +8,11 @@
 #### [Roadmap](./roadmap.md)
 
 ---
+#### [Video National Round](https://www.youtube.com/watch?v=FYAWZYVlbvs)
+#### [Video Demo National Round](https://www.youtube.com/watch?v=nzlg0kXEB38)
+#### [Pitch Deck National Round](https://drive.google.com/file/d/1nq9BPgxWj14wSb9KCvjWT9dj6fp4Wmvi)
+
+---
 
 ### 🔍 Problem Statement
 Fashion designers face critical challenges in protecting and monetizing their creations:
@@ -88,6 +93,39 @@ During this initial stage, Design Guardian lays the foundation for the future ec
 - 🧾 Smart storage permissions tied to identity
 
 **Goal of this stage:** Validate the UX and technical core of the platform, ensuring creators can start designing, managing, and organizing their digital fashion work.
+
+---
+
+### 🔍 Stage 2 — National round — Features Breakdown
+#### Progress Report
+
+During this phase, the following developments and improvements were carried out:
+
++ Deployment of the design tokenization canister:
+  + An ICRC7 canister was deployed, controlled by the platform’s main canister, responsible for managing and issuing NFTs linked to the designs.
+  + Test function for NFT minting:
+    A backend test function was implemented to handle NFT minting, acting as an intermediary between the user and the ICRC7 canister.
+
+--- 
++ New features implemented in the main canister:
+
++ Support for multimedia-enriched comments and nested replies with a depth of up to two levels on design posts.
+
++ Like functionality for both designs and comments.
+
++ Follow system allowing users to follow designers on the platform.
+
+---
+#### Frontend
++ Design file import and 3D rendering:
+  +Support for importing external design source files in GLB format was added, along with automatic 3D rendering in the frontend.
+  + To enable this, an interactive 3D gallery was built using the THREE.js library, allowing users to visualize their creations once imported.
+
+
+
++ Rebranding and overall UI/UX improvements:
++ Aesthetic updates and visual enhancements were made to strengthen the platform’s brand identity and overall user experience.
+
 
 ---
 

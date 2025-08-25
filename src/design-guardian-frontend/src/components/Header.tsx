@@ -107,7 +107,7 @@ const Header = () => {
         <div className="absolute left-1/2 transform -translate-x-1/2 text-center">
           <h1
             onClick={() => navigate("./")}
-            className="hidden sm:block text-[40px] font-bold text-[#ffccff] font-['EFCO Brookshire']
+            className="hidden sm:block text-[40px] font-bold text-[#ffccff] font-brookshire
               cursor-pointer hover:scale-110 transition-transform duration-300"
             >
             Design Guardian
