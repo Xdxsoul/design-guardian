@@ -11,7 +11,7 @@
 #### [Video National Round](https://www.youtube.com/watch?v=FYAWZYVlbvs)
 #### [Video Demo National Round](https://www.youtube.com/watch?v=nzlg0kXEB38)
 #### [Pitch Deck National Round](https://drive.google.com/file/d/1nq9BPgxWj14wSb9KCvjWT9dj6fp4Wmvi)
-#### [Screenshots related to the progress in the 2025 WCHL National Stage](README.md#L228)
+### [Screenshots related to the progress in the 2025 WCHL National Stage ⏬](README.md#L228)
 
 ---
 
