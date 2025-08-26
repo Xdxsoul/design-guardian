@@ -225,7 +225,22 @@ User Patterns
 Global Galery
 ![alt text](image-7.png)
 ___
-#### National stage screenshoots
+### National round updates
+#### NFT Collection Update (English)
+
+* A new NFT collection was developed and deployed on mainnet using the ICRC7 standard, allowing users to tokenize their designs as dual-layer NFTs. One layer is publicly accessible, while the second layer is exclusively available to NFT buyers, enabling premium or private content delivery.
+The minting rights are exclusively handled by the main canister, which acts as the minter account. Users can request the minting of their creations from this canister, which performs validation checks regarding the user's status (e.g., eligibility to mint) and the number of NFTs minted by that user within a certain time period, ensuring a fair and balanced system.
+
+#### Comments & Likes Module (English)
+
+* An enhanced social interaction module was developed, allowing users to like and unlike both designs and their associated comments, encouraging active community engagement.
+* The comment system supports nested replies up to a second level, enabling organized and contextual discussions. Furthermore, comments can include multimedia content (such as images, videos, or other supported formats), adding richness to interactions and idea sharing.
+* This feature is designed to foster a collaborative and creative feedback ecosystem while maintaining a clear structure and moderation capabilities when required.
+
+#### 3D Import & Rendering Module (English)
+
+* A design import module was developed to allow users to upload external files in formats such as .glb and other compatible types, which are then processed and rendered within an interactive 3D gallery on the platform. For real-time visualization and manipulation of the models, the system leverages THREE.js rendering technology, providing an immersive and seamless experience for showcasing and exploring designs in a three-dimensional environment.
+#### Screenshoots
 * ##### 3D Gallery 
 ![alt text](image-8.png)
 ![alt text](image-9.png)
